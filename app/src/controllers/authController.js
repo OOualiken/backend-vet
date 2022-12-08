@@ -4,7 +4,6 @@ const { validationResult } = require("express-validator");
 const {ValidationError, UserDoesntExistError, AuthError, UserError} = require("../configs/customError")
 
 exports.registerClient = async (req, res) =>{
-    console.log("test")
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(422).json({

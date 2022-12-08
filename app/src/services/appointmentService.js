@@ -146,7 +146,6 @@ exports.getAppointmentById = async(appId, userId) => {
 }
 
 exports.getAppointmentByUserId = async(userId) => {
-    console.log(userId)
     let user = await User.findById(userId)
     if(!user) throw new UserDoesntExistError()
 
@@ -288,7 +287,6 @@ exports.retrivePossibleDate = async (filter) =>{
 }
 
 async function appointmentDto(app, userId) {
-    console.log(app)
     let vet = await getUserById(app.veterinary)
 
     let client = null
@@ -296,8 +294,9 @@ async function appointmentDto(app, userId) {
     let requestDate = null
     let service = null
     if(!(app.client === null || app.client === undefined)){
+        console.log(app)
         client = await getUserById(app.client)
-        pet = await petService.hrFindById(app.Pet, userId)
+        pet = await petService.hrFindById(app.pet.toString(), userId)
         requestDate = app.requestDate
         service = app.service
     }

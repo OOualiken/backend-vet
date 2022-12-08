@@ -33,7 +33,7 @@ app.use(function(req, res, next) {
 // Connection to MongoDB
 connectToMongoDB();
 
-app.use('/', require('./routes/authRoutes'));
+app.use('/auth', require('./routes/authRoutes'));
 app.use('/user', require('./routes/userRoutes'));
 app.use('/pet', require('./routes/petRoutes'));
 app.use('/appointment', require('./routes/appointmentRoutes'));
