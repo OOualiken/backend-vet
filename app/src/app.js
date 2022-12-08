@@ -1,0 +1,41 @@
+"use strict";
+const express = require('express');
+const connectToMongoDB = require("./configs/dbConnect");
+const {PORT} = require("./configs/config");
+const dotenv = require('dotenv');
+
+dotenv.config();
+
+var cors = require('cors');
+
+const app = express();
+const port = PORT;
+
+app.use(express.json({extended: false}));
+
+app.use(cors());
+
+app.listen(port, () => {
+    console.log(`[server]: Server is running !`);
+});
+
+app.get('/', (req, res) => {
+    res.send('Express Server');
+});
+
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+        res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,PATCH,OPTIONS');
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Access-Control-Allow-Headers, Accept, Authorization");
+        next()
+})
+
+// Connection to MongoDB
+connectToMongoDB();
+
+app.use('/', require('./routes/authRoutes'));
+app.use('/user', require('./routes/userRoutes'));
+app.use('/pet', require('./routes/petRoutes'));
+app.use('/appointment', require('./routes/appointmentRoutes'));
+app.use('/stripe', require('./routes/stripeRoutes'));
+app.use('/newsletter', require('./routes/newsletterRoutes'));
