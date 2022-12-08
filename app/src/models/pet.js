@@ -9,7 +9,7 @@ const petSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    race: {
+    breed: {
         type: String,
         required: true,
     },
@@ -17,15 +17,10 @@ const petSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    sterilised: {
-        type: Boolean,
-        required: true,
+    weight: {
+        type: Number
     },
-    birthDate: {
-        type: Date,
-        required: true,
-    },
-    vaccins: [
+    vaccinationRecord: [
         {
             name: {
                 type: String,
@@ -35,24 +30,13 @@ const petSchema = new mongoose.Schema({
                 type: Date,
                 required: true,
             },
-            dateRecall: {
-                type: Date,
-            }
         }
     ],
-    notes: [
+    medicalRecord: [
         {
-            informations: {
-                type: String,
-                required: true,
-            },
-            date: {
-                type: Date,
-                required: true,
-            },
+            type: String
         }
     ],
-    deleted: {type: Boolean, default: false}
 })
 
 

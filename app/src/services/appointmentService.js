@@ -319,15 +319,20 @@ exports.appToDto = async (app, userId) => {
 
 async function getDisponibilityForVet(vet, date){
     let userDto = userToDto(vet)
-    let offset = 60*Number(process.env.OFFSET)
-    let dateStart = new Date(date.getTime()+offset*60*1000)
+    let momentDate = moment(date).subtract(1, 'h')
+    let dateStart = momentDate.set({
+        hour:   0,
+        minute: 0,
+        second: 0
+    })
 
     let dispoList = await VetDisponibility.find({
         veterinary: vet._id,
         date: {
             $gte: dateStart,
-            $lt: moment(dateStart).add(23, 'h')
-        }
+            $lt: moment(dateStart).add(1, 'd')
+        },
+        bookingStatus: false
     })
 
     return {

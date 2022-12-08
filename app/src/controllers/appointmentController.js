@@ -28,6 +28,15 @@ exports.getVetDisponibility = async (req, res) => {
     }
 }
 
+exports.getVetDisponibilityByDate = async (req, res) => {
+    try{
+        let result = await getVetDispoByDate(req.params.vetId, req.params.date)
+        return res.status(200).json({result});
+    }catch (err){
+        handleErrorMessage(err, res)
+    }
+}
+
 exports.getMyAppointment = async (req, res) => {
     try{
         let result = await getAppointmentByUserId(req.userId)
