@@ -11,7 +11,7 @@ exports.newsletterCreation = [
 ];
 
 exports.createNewsletter = async (body) => {
-    if(!checkReceiver(body.receiver)) throw NewsletterError("Newsletter receiver doesnt exist")
+    if(!checkReceiver(body.receiver)) throw new NewsletterError("Newsletter receiver doesnt exist")
     let newsletter = new Newsletter({
         message: body.message,
         object: body.object,

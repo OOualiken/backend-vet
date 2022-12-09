@@ -37,8 +37,8 @@ exports.newAppointment = async(body, userId) => {
 
     let vet = await User.findById(body.veterinary)
     if(!vet) throw new UserDoesntExistError()
-    if(vet.role !== ROLE.veterinary) throw UserError("Can't book an appointment with a user that is not a veterinary.")
-    if(!vet.active) throw UserError("Can't book an appointment with a veterinary without an active account.")
+    if(vet.role !== ROLE.veterinary) throw new UserError("Can't book an appointment with a user that is not a veterinary.")
+    if(!vet.active) throw new UserError("Can't book an appointment with a veterinary without an active account.")
 
     let hr = await Pet.findById(body.pet)
     if(!hr) throw new HRExistError()
@@ -63,8 +63,8 @@ exports.newVetDispo = async(body, userId) => {
     let user = await User.findById(userId)
     if(!user) throw new UserDoesntExistError()
 
-    if(user.role !== ROLE.veterinary) throw UserError("Can't create a disponibility with a user that is not a veterinary.")
-    if(!user.active) throw UserError("Can't create a disponibility with a veterinary without an active account.")
+    if(user.role !== ROLE.veterinary) throw new UserError("Can't create a disponibility with a user that is not a veterinary.")
+    if(!user.active) throw new UserError("Can't create a disponibility with a veterinary without an active account.")
 
     console.log(body.date)
 
