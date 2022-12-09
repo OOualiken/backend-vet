@@ -1,4 +1,5 @@
 const User = require("../models/user");
+const Pet = require("../models/pet");
 const {check} = require("express-validator");
 const bcrypt = require("bcryptjs");
 const {UserDoesntExistError, UserError, ValidationError} = require("../configs/customError")
@@ -33,7 +34,7 @@ exports.getUserByRole = async (role) =>{
 
     let resList = []
     for(let i = 0; i<userList.length; i++){
-        resList.push(userToUserInfo(userList[i]))
+        resList.push(await userToUserInfo(userList[i]))
     }
 
     return resList
@@ -44,7 +45,7 @@ exports.getNotActiveVet = async () =>{
 
     let resList = []
     for(let i = 0; i<userList.length; i++){
-        resList.push(userToUserInfo(userList[i]))
+        resList.push(await userToUserInfo(userList[i]))
     }
 
     return resList
@@ -106,7 +107,7 @@ exports.userToDto = (user) => {
 exports.removePet = async (hrId, userId) => {
     let userDb = await User.findOne({_id: userId});
 
-    userDb.Pets = userDb.Pets.filter(function(elem) {
+    userDb.pets = userDb.pets.filter(function(elem) {
         return elem.toString() != hrId
     })
     return userDb.save()
@@ -191,7 +192,20 @@ async function newVet(user, id, oldUser){
         })
 }
 
-function userToUserInfo(user){
+async function userToUserInfo(user) {
+    let petDto = await Promise.all(user.pets.map(async e => {
+        let pet = await Pet.findById(e)
+        return {
+            id: pet._id,
+            type: pet.type,
+            name: pet.name,
+            breed: pet.breed,
+            sex: pet.sex,
+            birthDate: pet.birthDate,
+            vaccinationRecord: pet.vaccinationRecord,
+            medicalRecord: pet.medicalRecord,
+        }
+    }))
 
     return {
         id: user._id,
@@ -205,7 +219,7 @@ function userToUserInfo(user){
         active: user.active,
         city: user.city,
         phoneNb: user.phoneNb,
-        Pets: user.Pets,
+        pets: petDto,
     }
 }
 

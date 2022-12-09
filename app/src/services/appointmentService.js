@@ -157,7 +157,8 @@ exports.getAppointmentByUserId = async(userId) => {
         })
     }else if(user.role === ROLE.veterinary){
         appList = await VetDisponibility.find({
-            veterinary: userId
+            veterinary: userId,
+            bookingStatus: true
         })
     }
 
@@ -248,6 +249,27 @@ exports.getVetDisponibility = async(vetId, date) => {
     return getDisponibilityForVet(vet, new Date(date))
 }
 
+exports.getAllDisponibility = async(date) => {
+    let momentDate = moment(date)
+    let dateStart = momentDate.set({
+        hour:   0,
+        minute: 0,
+        second: 0
+    })
+
+
+    let dispoList = await VetDisponibility.find({
+        date: {
+            $gte: dateStart,
+            $lt: moment(dateStart).add(1, 'd'),
+        },
+        bookingStatus: false
+    })
+
+    return Promise.all(dispoList.map(async e => {
+        return appointmentDto(e)
+    }))
+}
 exports.retrivePossibleDate = async (filter) =>{
     let date = new Date(filter.date)
 
@@ -303,7 +325,7 @@ async function appointmentDto(app, userId) {
 
     return {
         id: app._id,
-        date: "2022-12-13T10:30:00.000Z",
+        date: app.date,
         bookingStatus: false,
         veterinary: vet,
         client: client,
@@ -318,8 +340,8 @@ exports.appToDto = async (app, userId) => {
 }
 
 async function getDisponibilityForVet(vet, date){
-    let userDto = userToDto(vet)
-    let momentDate = moment(date).subtract(1, 'h')
+    let userDto = await userToDto(vet)
+    let momentDate = moment(date)
     let dateStart = momentDate.set({
         hour:   0,
         minute: 0,
@@ -330,13 +352,17 @@ async function getDisponibilityForVet(vet, date){
         veterinary: vet._id,
         date: {
             $gte: dateStart,
-            $lt: moment(dateStart).add(1, 'd')
+            $lt: moment(dateStart).add(1, 'd'),
         },
         bookingStatus: false
     })
 
+    let dispoDto = await Promise.all(dispoList.map(async e => {
+        return appointmentDto(e)
+    }))
+
     return {
-        dispoList,
+        dispoList: dispoDto,
         vet: userDto
     }
 

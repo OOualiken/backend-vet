@@ -1,7 +1,7 @@
 {
   "name": "vetservices-back",
   "version": "1.0.0",
-  "description": "Rattrapage du rattrapage",
+  "description": "Rattrapage",
   "main": "index.js",
   "scripts": {
     "start": "node app/src/app.js --proxy-config src/proxy.config.json",
@@ -9,7 +9,7 @@
     "test": "mocha 'tests/**/*.js' --recursive",
     "deploy": "gatsby-plugin-s3 deploy --yes; export AWS_PAGER=\"\"; aws cloudfront create-invalidation --distribution-id E5FDMTLPHUTLTL --paths '/*';"
   },
-  "author": "Djadji",
+  "author": "Ourdia",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.0.1",

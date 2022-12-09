@@ -1,6 +1,6 @@
 const User = require("../models/user");
 const {check} = require("express-validator");
-const pet = require("../models/pet");
+const Pet = require("../models/pet");
 const Appointment = require("../models/appointment");
 const userService = require("./userService")
 const {deleteAppointmentByHRId} = require("./appointmentService")
@@ -12,10 +12,8 @@ const {validateBirthDate} = require("../configs/validation")
 exports.petValidation = [
     check("type", "type is required").not().isEmpty(),
     check("name", "name is required").not().isEmpty(),
-    check("race", "race is required").not().isEmpty(),
+    check("breed", "breed is required").not().isEmpty(),
     check("sex", "sex is required").not().isEmpty(),
-    check("sterilised", "sterilised is required").not().isEmpty(),
-    check("sterilised", "sterilised is not a boolean").isBoolean(),
     check("birthDate", "birthDate is required").not().isEmpty(),
 ];
 
@@ -46,7 +44,7 @@ exports.getPetById = async(hrId, userId) => {
 }
 
 exports.hrFindById = async(hrId) => {
-    let hr = await pet.findById(hrId)
+    let hr = await Pet.findById(hrId)
     return hrToDto(hr)
 }
 
@@ -59,14 +57,13 @@ exports.addNewPet = async(pet, userId) => {
     nHr = await nHr.save()
     user.pets.push(nHr.id)
 
-
     await user.save()
 
     return nHr
 }
 
 async function validateUserRightOnHR(userId, hrId, action){
-    let hr = await pet.findById(hrId)
+    let hr = await Pet.findById(hrId)
 
     if(!hr) throw new HRExistError()
     if(hr.deleted && action!=="get") throw new HRError("This HR is deleted, you can't access it!")
@@ -84,44 +81,42 @@ async function validateUserRightOnHR(userId, hrId, action){
 }
 
 function newPet(pet) {
-    return new pet({
-        type: validateAnimalType(pet.type),
+    return new Pet({
+        type: pet.type,
         name: pet.name,
-        race: pet.race,
+        breed: pet.breed,
         sex: validateAnimalSex(pet.sex),
-        sterilised: pet.sterilised,
+        weight: pet.weight,
         birthDate: validateBirthDate(pet.birthDate),
-        vaccins: pet.vaccins,
-        notes: pet.notes,
+        vaccinationRecord: pet.vaccinationRecord,
+        medicalRecord: pet.medicalRecord,
     })
 }
 
 function updateHR(pet) {
-    return pet.updateOne({
+    return Pet.updateOne({
             _id: pet._id
         },
         {
         type: validateAnimalType(pet.type),
         name: pet.name,
-        race: pet.race,
+        breed: pet.breed,
         sex: validateAnimalSex(pet.sex),
-        sterilised: pet.sterilised,
+        weight: pet.weight,
         birthDate: validateBirthDate(pet.birthDate),
-        vaccins: pet.vaccins,
-        notes: pet.notes,
+        vaccinationRecord: pet.vaccinationRecord,
+        medicalRecord: pet.medicalRecord,
     })
 }
 
 function deleteHr(hrId){
-    return pet.updateOne({
+    return Pet.deleteOne({
         _id: hrId
-    }, {
-        deleted: true
     })
 }
 
 exports.getHRById = async(id) => {
-    let hr = await pet.findById(id)
+    let hr = await Pet.findById(id)
     if(!hr) throw new HRExistError()
     return hr
 }
@@ -144,17 +139,15 @@ function validateAnimalSex(sex){
     throw new ValidationError("Animal sex doesnt exist.")
 }
 
-function hrToDto(hr){
+function hrToDto(pet){
     return {
-        id: hr._id,
-        type: hr.type,
-        name: hr.name,
-        race: hr.race,
-        sex: hr.sex,
-        sterilised: hr.sterilised,
-        birthDate: hr.birthDate,
-        vaccins: hr.vaccins,
-        notes: hr.notes,
-        deleted: hr.deleted
+        id: pet._id,
+        type: pet.type,
+        name: pet.name,
+        breed: pet.breed,
+        sex: pet.sex,
+        birthDate: pet.birthDate,
+        vaccinationRecord: pet.vaccinationRecord,
+        medicalRecord: pet.medicalRecord,
     }
 }

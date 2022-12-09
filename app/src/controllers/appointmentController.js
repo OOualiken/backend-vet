@@ -1,4 +1,4 @@
-const {newVetDispo, getVetDispo, deleteVetDispo, getAppointmentByUserId, bookVetDispo,
+const {newVetDispo, getVetDispo, deleteVetDispo, getAppointmentByUserId, bookVetDispo, getAllDisponibility,
     retrivePossibleDate, getVetDisponibility, adminGetAppointmentByUserId, deleteBookingVetDispo} = require("../services/appointmentService")
 const { validationResult } = require("express-validator");
 const {ValidationError, UserDoesntExistError, AuthError, AppointmentError, UserError} = require("../configs/customError")
@@ -96,6 +96,16 @@ exports.getRequestAppointment = async (req, res) => {
 exports.getVetDisponibilityList = async (req, res) => {
     try{
         let result = await getVetDisponibility(req.params.id, req.body.date)
+        return res.status(200).json(result)
+    }catch (err){
+        console.error(err.message);
+        return res.status(400).json(err.message);
+    }
+}
+
+exports.getAllDisponibilityByDate = async (req, res) => {
+    try{
+        let result = await getAllDisponibility(req.body.date)
         return res.status(200).json(result)
     }catch (err){
         console.error(err.message);
